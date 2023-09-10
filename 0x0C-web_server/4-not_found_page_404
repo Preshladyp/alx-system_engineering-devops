@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
-# Install nginx on web server; Nginx should be listening on port 80
-# Update and upgrade packages
+# Customising a 404 page
 
+# Update and upgrade packages
 sudo apt-get -y  update
 sudo apt-get -y upgrade
+
 # Install nginx
 sudo apt-get -y install nginx
-sudo echo "Hello World!" | sudo tee /var/www/html/index.html
-sudo sed -i '23i\rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-echo "Ceci n'est pas une page" | sudo tee /usr/share/nginx/html/404_page.html
 
-sudo sed -i '24i\error_page 404 /404_page.html; location = /404_page.html { root /usr/share/nginx/html/404_page.html; internal;}' /etc/nginx/sites-available/default
-# Restart nginx
+sudo echo "Hello World!" | sudo tee /var/www/html/index.html
+
+string_for_replacement="server_name _;\n\t\trewrite ^\/redirect_me https:\/\/github.com\/Preshladyp permanent;"
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+# creating a 404 error page
+
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+string_for_replacement="listen 80 default_service;\n\terror_page 404 \/404.html;\n\t\location = \/404.html {\n\troot \/var/www/html;\n\t\tinternal;\n\t}"
+
+sudo sed -i "s/listen 80 default_server;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+#Restart nginx after implementing changes
+
 sudo service nginx restart
