@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
-# Install nginx on web server; Nginx should be listening on port 80
-# Update and upgrade packages
+# configuring web-01 to have an HTTP response header
 
-sudo apt-get -y  update
-sudo apt-get -y upgrade
+# Update packages
+sudo apt-get -y update
+
 # Install nginx
 sudo apt-get -y install nginx
-sudo echo "Hello World!" | sudo tee /var/www/html/index.html
-sudo sed -i '23i\rewrite ^/redirect_me https://www.github.com/Preshladyp permanent;' /etc/nginx/sites-available/default
-echo "Ceci n'est pas une page" | sudo tee /usr/share/nginx/html/404_page.html
 
-sudo sed -i '24i\error_page 404 /404_page.html; location = /404_page.html { root /usr/share/nginx/html/404_page.html; internal;}' /etc/nginx/sites-available/default
-# Add custom HTTP response header to Nginx
-sudo sed -i 's|^\(server {\)|\1\n        add_header X-Served-By $hostname;|' /etc/nginx/sites-available/default
+# creating an index page
+sudo echo "Hello World!" | sudo tee /var/www/html/index.html
+
+# performing a redirection
+new_string= "server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/Preshladyp permanent;"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
+
+# creating custom error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+# custom HTTP response header
+sudo sed -i "server_name _;/a add_header x-served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
+
+#Test for syntax errors
+sudo nginx -t
+
 # Restart nginx
 sudo service nginx restart
