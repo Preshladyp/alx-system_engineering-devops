@@ -8,21 +8,13 @@ sudo apt-get -y update
 sudo apt-get -y install nginx
 
 # creating an index page
-sudo echo "Hello World!" | sudo tee /var/www/html/index.html
-
-# performing a redirection
-new_string= "server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/Preshladyp permanent;"
-sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
-
-# creating custom error page
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+sudo echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
 
 # custom HTTP response header
-sudo sed -i "server_name _;/a add_header X-served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
-sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-#Test for syntax errors
-sudo nginx -t
+comment="\# Custom HTTP response header"
+old="location \/ {"
+new="$old\n\t\t$comment\n\t\tadd_header X-Served-By $HOSTNAME;\n"
+sudo sed -i "s/$old/$new/" /etc/nginx/sites-enabled/default
 
 # Restart nginx
 sudo service nginx restart
