@@ -1,3 +1,7 @@
+![image](https://github.com/Preshladyp/alx-system_engineering-devops/assets/111128701/154cdfbc-0681-44a4-b470-d57c696e5267)
+
+
+
 Web Stack Outage
 
 Date of the Web Stack Outage: October 12, 2023
